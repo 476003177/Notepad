@@ -44,8 +44,6 @@ public class DiaryDatabaseBmobHelper{
     //设置data的id
     public void setDataID(String id){
         this.data.setObjectId(id);
-//        this.data.setObjectId(id);
-        Log.e("到1", "setDataID: "+this.data.getObjectId());
     }
     //添加数据
     public void AddData(){
@@ -63,62 +61,63 @@ public class DiaryDatabaseBmobHelper{
 
     //删除数据
     public void DeleteData(){
-        Find_setId();
-        this.data.delete(new UpdateListener() {
-            @Override
-            public void done(BmobException e) {
-                if(e==null){
-                    Log.i("bmob","删除成功");
-                }else{
-                    Log.i("bmob","删除失败："+e.getMessage()+","+e.getErrorCode());
-                }
-            }
-        });
-    }
-
-    //修改数据
-    public void UpdateData(DiaryData data){
-        Find_setId();
-        data.update(this.data.getObjectId(), new UpdateListener() {//objectID为需要获取数据的id
-            @Override
-            public void done(BmobException e) {
-                if(e==null){
-                    Log.i("bmob","更新成功");
-                }else{
-                    Log.i("bmob","更新失败："+e.getMessage()+","+e.getErrorCode());
-                }
-            }
-        });
-    }
-
-    //匹配条件查询，返回ID
-    public void Find_setId(){
-        final boolean go[]=new boolean[1];
-        go[0]=false;
+        //查询
         BmobQuery<DiaryData> query = new BmobQuery<DiaryData>();
-//        query.addWhereEqualTo("title",this.data.getTitle());
+        final DiaryDatabaseBmobHelper that=this;
         query.addWhereEqualTo("tag",this.data.getTag());
-//        query.addWhereEqualTo("date",this.data.getDate());
         query.findObjects(new FindListener<DiaryData>() {
             @Override
             public void done(List<DiaryData> object, BmobException e) {
                 if(e==null){
                     String deleteId=object.get(0).getObjectId();
                     Log.i("bmob","查询id成功："+deleteId);
-                    setDataID(deleteId);
+                    //删除
+                    that.setDataID(deleteId);
+                    that.data.delete(new UpdateListener() {
+                        @Override
+                        public void done(BmobException e) {
+                            if(e==null){
+                                Log.i("bmob","删除成功");
+                            }else{
+                                Log.i("bmob","删除失败："+e.getMessage()+","+e.getErrorCode());
+                            }
+                        }
+                    });
                 }else{
                     Log.i("bmob","查询id失败："+e.getMessage()+","+e.getErrorCode());
                 }
-                go[0]=true;
             }
         });
-        while (!go[0]){
-            try {
-                wait(1000);
-            }catch(Exception e) {
-                e.printStackTrace();
-            }
-        };
-        Log.e("到", "Find_setId: "+this.data.getObjectId());
     }
+
+    //修改数据
+    public void UpdateData(){
+        //查询
+        BmobQuery<DiaryData> query = new BmobQuery<DiaryData>();
+        final DiaryDatabaseBmobHelper that=this;
+        query.addWhereEqualTo("tag",this.data.getTag());
+        query.findObjects(new FindListener<DiaryData>() {
+            @Override
+            public void done(List<DiaryData> object, BmobException e) {
+                if(e==null){
+                    String deleteId=object.get(0).getObjectId();
+                    Log.i("bmob","查询id成功："+deleteId);
+                    //修改更新
+                    that.data.update(deleteId, new UpdateListener() {//objectID为需要获取数据的id
+                        @Override
+                        public void done(BmobException e) {
+                            if(e==null){
+                                Log.i("bmob","更新成功");
+                            }else{
+                                Log.i("bmob","更新失败："+e.getMessage()+","+e.getErrorCode());
+                            }
+                        }
+                    });
+                }else{
+                    Log.i("bmob","查询id失败："+e.getMessage()+","+e.getErrorCode());
+                }
+            }
+        });
+    }
+
 }

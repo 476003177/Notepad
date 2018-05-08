@@ -89,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        initBmob();//初始化Bmob
-        Bmob.initialize(this, "e952b8aa9b5b3733a7d2706377987823");
+        initBmob();//初始化Bmob
+
         setContentView(R.layout.activity_main);
         AppManager.getAppManager().addActivity(this);
         ButterKnife.bind(this);
@@ -104,8 +104,8 @@ public class MainActivity extends AppCompatActivity {
         initTitle();
         mMainRvShowDiary.setLayoutManager(new LinearLayoutManager(this));
         mMainRvShowDiary.setAdapter(new DiaryAdapter(this, mDiaryBeanList));
-        mTvTest = new TextView(this);
-        mTvTest.setText("hello world");
+        /*mTvTest = new TextView(this);
+        mTvTest.setText("hello world");*/
     }
 
     private void initBmob() {

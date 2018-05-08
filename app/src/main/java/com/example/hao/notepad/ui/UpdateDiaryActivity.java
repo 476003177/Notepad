@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -89,8 +90,6 @@ public class UpdateDiaryActivity extends AppCompatActivity {
         mUpdateDiaryEtContent.setText(intent.getStringExtra("content"));
         mTvTag.setText(intent.getStringExtra("tag"));
 
-
-
     }
 
     private void initTitle() {
@@ -115,9 +114,10 @@ public class UpdateDiaryActivity extends AppCompatActivity {
                 alertDialogBuilder.setMessage("确定要删除该日记吗？").setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
-//                        String title = mUpdateDiaryEtTitle.getText().toString();
+                        String title = mUpdateDiaryEtTitle.getText().toString();
                         String tag = mTvTag.getText().toString();
                         SQLiteDatabase dbDelete = mHelper.getWritableDatabase();
+//                        dbDelete.delete("Diary", "title = ?", new String[]{title});
                         dbDelete.delete("Diary", "tag = ?", new String[]{tag});
 
                         //删除bmob数据
@@ -145,6 +145,15 @@ public class UpdateDiaryActivity extends AppCompatActivity {
                 valuesUpdate.put("content", content);
                 dbUpdate.update("Diary", valuesUpdate, "title = ?", new String[]{title});
                 dbUpdate.update("Diary", valuesUpdate, "content = ?", new String[]{content});
+                //修改bmob数据
+                DiaryData diarydata=new DiaryData();
+                diarydata.setDate(mUpdateDiaryTvDate.getText().toString());
+                diarydata.setTitle(mUpdateDiaryEtTitle.getText().toString());
+                diarydata.setContent(mUpdateDiaryEtContent.getText().toString());
+                diarydata.setTag(mTvTag.getText().toString());
+                bmobHelper=new DiaryDatabaseBmobHelper(diarydata);
+                bmobHelper.UpdateData();
+
                 MainActivity.startActivity(this);
                 break;
             case R.id.update_diary_fab_delete:
